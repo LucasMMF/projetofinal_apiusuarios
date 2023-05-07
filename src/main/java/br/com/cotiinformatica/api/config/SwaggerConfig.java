@@ -23,6 +23,7 @@ public class SwaggerConfig {
 						.email("mateusmidao@gmail.com")
 						.url("https://github.com/LucasMMF")
 				)
+				.version("v1")
 		);
 	}
 	
