@@ -1,5 +1,9 @@
 package br.com.cotiinformatica.application.dtos;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,12 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterResponseDTO {
+public class ExceptionHandlerDTO {
 
-	private String message;
-	private String id;
-	private String name;
-	private String email;
-	private String phone;
+	private HttpStatus status;
+	private List<String> errors;
 	
 }
