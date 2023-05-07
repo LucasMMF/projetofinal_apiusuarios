@@ -1,6 +1,5 @@
 package br.com.cotiinformatica.domain.services;
 
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,16 +33,7 @@ public class UserDomainService implements IUserDomainService {
 		if (optional.isPresent())
 			throw new IllegalArgumentException("O email informado já foi cadastrado.");
 		
-		try {
-			
-			user.setPassword(md5Component.encryptToMD5(user.getPassword()));
-			
-		} catch (NoSuchAlgorithmException ex) {
-			
-			ex.printStackTrace();
-			
-		}
-		
+		user.setPassword(md5Component.encryptToMD5(user.getPassword()));
 		user.setId(UUID.randomUUID());
 		user.setDateTimeCreated(Instant.now());
 		user.setDateTimeLastUpdated(user.getDateTimeCreated());
@@ -53,23 +43,14 @@ public class UserDomainService implements IUserDomainService {
 
 	@Override
 	public User authenticate(String email, String password) {
+			
+		Optional<User> optional = userRepository.findByEmailAndPassword(email, md5Component.encryptToMD5(password));
 		
-		User user = null;
+		if (optional.isEmpty())
+			throw new IllegalArgumentException("Acesso negado. Usuário não encontrado.");
 		
-		try {
-			
-			Optional<User> optional = userRepository.findByEmailAndPassword(email, md5Component.encryptToMD5(password));
-			
-			if (optional.isEmpty())
-				throw new IllegalArgumentException("Acesso negado. Usuário não encontrado.");
-			
-			user = optional.get();
-			user.setAccessToken(tokenCreator.generateToken(user.getEmail()));
-			
-			
-		} catch (NoSuchAlgorithmException ex) {
-			ex.printStackTrace();
-		}
+		User user = optional.get();
+		user.setAccessToken(tokenCreator.generateToken(user.getEmail()));
 		
 		return user;
 	}
