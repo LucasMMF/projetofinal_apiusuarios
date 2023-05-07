@@ -12,6 +12,7 @@ import br.com.cotiinformatica.domain.interfaces.IUserDomainService;
 import br.com.cotiinformatica.domain.models.User;
 import br.com.cotiinformatica.infrastructure.components.MD5Component;
 import br.com.cotiinformatica.infrastructure.repositories.UserRepository;
+import br.com.cotiinformatica.infrastructure.security.TokenCreator;
 
 @Service
 public class UserDomainService implements IUserDomainService {
@@ -21,6 +22,9 @@ public class UserDomainService implements IUserDomainService {
 	
 	@Autowired
 	private MD5Component md5Component;
+	
+	@Autowired
+	private TokenCreator tokenCreator;
 
 	@Override
 	public void register(User user) {
@@ -48,9 +52,26 @@ public class UserDomainService implements IUserDomainService {
 	}
 
 	@Override
-	public User authenticate(String email, String senha) {
-		// TODO Auto-generated method stub
-		return null;
+	public User authenticate(String email, String password) {
+		
+		User user = null;
+		
+		try {
+			
+			Optional<User> optional = userRepository.findByEmailAndPassword(email, md5Component.encryptToMD5(password));
+			
+			if (optional.isEmpty())
+				throw new IllegalArgumentException("Acesso negado. Usuário não encontrado.");
+			
+			user = optional.get();
+			user.setAccessToken(tokenCreator.generateToken(user.getEmail()));
+			
+			
+		} catch (NoSuchAlgorithmException ex) {
+			ex.printStackTrace();
+		}
+		
+		return user;
 	}
 
 	@Override

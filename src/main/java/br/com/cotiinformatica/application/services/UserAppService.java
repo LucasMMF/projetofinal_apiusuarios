@@ -38,8 +38,16 @@ public class UserAppService implements IUserAppService {
 
 	@Override
 	public AuthenticateResponseDTO authenticate(AuthenticateDTO dto) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		ModelMapper modelMapper = new ModelMapper();
+		
+		User user = userDomainService.authenticate(dto.getEmail(), dto.getPassword());
+		
+		AuthenticateResponseDTO response = modelMapper.map(user, AuthenticateResponseDTO.class);
+		response.setMessage("Usuário autenticado com sucesso.");
+		
+		return response;
+		
 	}
 
 	@Override
